@@ -13,6 +13,9 @@ namespace UnityEditorExtensions
         Rect GetBounds();
     }
 
+    /** A standard list item with a label and an optional icon.
+     * 
+     */
     public class LabelListItem : IListItem
     {
         public string name;
@@ -50,7 +53,9 @@ namespace UnityEditorExtensions
         }
     }
 
-
+    /** A data structure to organize ListItems within an ItemList
+     * 
+     */
     public class ListItemCollection : IEnumerable
     {
         public ListItemCollection()
@@ -99,13 +104,17 @@ namespace UnityEditorExtensions
         public void ClearSelection() { mSelected.Clear(); }
     }
 
-
+    /** Contains all static GUI extention functions.
+     * 
+     */
     public class EditorGUIExt
     {
         private static bool sShiftKeyState = false;
         public static GUIContent sEmptyContent = new GUIContent();
 
-
+        /** Creates an ItemList with the default settings for background rendering.
+         * 
+         */
         public static void ItemList(
             ListItemCollection items,
             Action updateContentsFunction,
@@ -114,7 +123,9 @@ namespace UnityEditorExtensions
             ItemList(items, updateContentsFunction, ref scrollPos, GUI.Box, sEmptyContent);
         }
 
-
+        /** Creates an ItemList.
+         * 
+         */
         public static void ItemList(
             ListItemCollection items,
             Action updateContentsFunction,
