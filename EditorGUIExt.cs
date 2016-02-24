@@ -124,51 +124,56 @@ namespace UnityEditorExtensions
      */
     public class EditorGUIExt
     {
-        
-        /** Creates an ItemList with the default settings for background rendering.
-         * 
-         */
-        public static void ItemList(
-            ListItemCollection items,
-            Action updateContentsFunction,
-            ref Vector2 scrollPos)
-        {
-            ItemList(items, updateContentsFunction, ref scrollPos, GUI.Box, GUIContent.none);
-        }
+        public static GUIStyle sDefBGStyle = GUIStyle.none;
 
-        /** Creates an ItemList.
-         * 
-         */
-        public static void ItemList(
-            ListItemCollection items,
-            Action updateContentsFunction,
-            ref Vector2 scrollPos,
-            Action<Rect, GUIContent> backgroundRenderFunction,
-            GUIContent backgroundContent)
-        {
-            var e = Event.current;
-            if (updateContentsFunction != null && e.type == EventType.Repaint)
-            {
-                updateContentsFunction();
-            }
+		public static void ItemList(ListItemCollection items, ref Vector2 scrollPos, ref bool guiChanged, GUIStyle backgroundStyle, params GUILayoutOption[] options) {
+			ItemList(items, ref scrollPos, ref guiChanged, null, backgroundStyle, options);
+		}
+		public static void ItemList(ListItemCollection items, ref Vector2 scrollPos, ref bool guiChanged, Action updateContentsFunction, params GUILayoutOption[] options) {
+			ItemList(items, ref scrollPos, ref guiChanged, updateContentsFunction, sDefBGStyle, options);
+		}
+		public static void ItemList(ListItemCollection items, ref Vector2 scrollPos, ref bool guiChanged, params GUILayoutOption[] options) {
+			ItemList(items, ref scrollPos, ref guiChanged, null, sDefBGStyle, options);
+		}
+		
+		public static bool ItemList(ListItemCollection items, ref Vector2 scrollPos, Action updateContentsFunction, GUIStyle backgroundStyle, params GUILayoutOption[] options) {
+			bool guiChanged = false;
+			ItemList(items, ref scrollPos, ref guiChanged, updateContentsFunction, backgroundStyle, options);
+			return guiChanged;
+		}
+		public static bool ItemList(ListItemCollection items, ref Vector2 scrollPos, Action updateContentsFunction, params GUILayoutOption[] options) {
+			return ItemList(items, ref scrollPos, updateContentsFunction, sDefBGStyle, options);
+		}
+		public static bool ItemList(ListItemCollection items, ref Vector2 scrollPos, GUIStyle backgroundStyle, params GUILayoutOption[] options) {
+			return ItemList(items, ref scrollPos, null, backgroundStyle, options);
+		}
+		public static bool ItemList(ListItemCollection items, ref Vector2 scrollPos, params GUILayoutOption[] options) {
+			return ItemList(items, ref scrollPos, null, sDefBGStyle, options);
+		}
 
-            // Get default nouse position out of view.
-            Vector2 mpos = new Vector2(-99, -99);
-            if (e.type == EventType.MouseDown && e.button == 0)
-            {
-                mpos = e.mousePosition + scrollPos;
-                
-                bool ctrlPressed = (e.modifiers & EventModifiers.Control) > 0;
-                bool shiftPressed = (e.modifiers & EventModifiers.Shift) > 0;
-                
-                // handle click event
-                for (int i = 0; i < items.Count; i += 1)
-                {
-                    Rect itemBounds = items[i].GetBounds();
-                    //Check for selection
-                    if (itemBounds.Contains(mpos))
-                    {
-                        if (shiftPressed && items.Selected.Count >= 1) {
+		public static void ItemList(ListItemCollection items, ref Vector2 scrollPos, ref bool guiChanged, Action updateContentsFunction, GUIStyle bgStyle, params GUILayoutOption[] options) {
+			var e = Event.current;
+			if (updateContentsFunction != null && e.type == EventType.Repaint) {
+				updateContentsFunction();
+			}
+
+			// Get default nouse position out of view.
+			Vector2 mpos = new Vector2(-99, -99);
+			if (e.type == EventType.MouseDown && e.button == 0) {
+
+				mpos = e.mousePosition + scrollPos;
+
+				bool ctrlPressed = (e.modifiers & EventModifiers.Control) > 0;
+				bool shiftPressed = (e.modifiers & EventModifiers.Shift) > 0;
+
+				// handle click event
+				for (int i = 0; i < items.Count; i += 1) {
+					Rect itemBounds = items[i].GetBounds();
+					//Check for selection
+					if (itemBounds.Contains(mpos)) {
+						// signal window repaint needed.
+						guiChanged = true;
+						if (shiftPressed && items.Selected.Count >= 1) {
 							int lastIndex = items.IndexOf(items.Selected[items.Selected.Count - 1]);
 							int upper = Mathf.Max(lastIndex, i);
 							int lower = Mathf.Min(lastIndex, i);
@@ -181,35 +186,33 @@ namespace UnityEditorExtensions
 							}
 						}
 						else {
-							if (!ctrlPressed) 
+							if (!ctrlPressed)
 								items.ClearSelection();
 							if (items.ItemSelected(i) && ctrlPressed)
 								items.Deselect(i);
 							else
 								items.Select(i);
 						}
-                    }
-                }
-            }
-
-
-            // Draw the ListView
-            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
-            if (items != null)
-            {
-                foreach (IListItem item in items)
-                {   if (items.Selected.Contains(item))
-                    {
-                        item.DrawSelected();
-                    }
-                    else
-                    {
-                        item.DrawItem();
-                    }
-                }
-            }
-            EditorGUILayout.EndScrollView();
-        }
-
+					}
+				}
+			}
+			
+			// Draw the ListView
+			if (options == null || options.Length == 0) {
+				options = new GUILayoutOption[]{ GUILayout.ExpandHeight(true) };
+			}
+			scrollPos = EditorGUILayout.BeginScrollView(scrollPos, bgStyle, options);
+			if (items != null) {
+				foreach (IListItem item in items) {
+					if (items.Selected.Contains(item)) {
+						item.DrawSelected();
+					}
+					else {
+						item.DrawItem();
+					}
+				}
+			}
+			EditorGUILayout.EndScrollView();
+		}
     }
 }
