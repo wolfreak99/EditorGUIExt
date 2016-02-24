@@ -87,22 +87,26 @@ namespace UnityEditorExtensions
         public bool Remove(IListItem item) { return mItems.Remove(item); }
         public void Clear() { mItems.Clear(); }
         public int Count { get { return mItems.Count; } }
-        public bool ItemSelected(int index) { return mSelected.Contains(mItems[index]); }
-        public IListItem this[int i]
+        public bool ItemSelected(IListItem item) { return mSelected.Contains(item); }
+		public bool ItemSelected(int index) { return ItemSelected(mItems[index]); }
+		public IListItem this[int i]
         {
             get { return mItems[i]; }
             set { mItems[i] = value; }
         }
 
-        public void Select(int index)
-        {
-            if (!mSelected.Contains(mItems[index])) mSelected.Add(mItems[index]);
-        }
-
-        public void Deselect(int index)
-        {
-            if (mSelected.Contains(mItems[index])) mSelected.Remove(mItems[index]);
-        }
+        public void Select(IListItem item) {
+			if (!mSelected.Contains(item)) {
+				mSelected.Add(item);
+			}
+		}
+		public void Deselect(IListItem item) {
+			if (mSelected.Contains(item)) {
+				mSelected.Remove(item);
+			}
+		}
+		public void Select(int index) { Select(mItems[index]); }
+		public void Deselect(int index) { Deselect(mItems[index]); }
 
         public void ClearSelection() { mSelected.Clear(); }
         public int IndexOf(IListItem item) { return mItems.IndexOf(item); }
