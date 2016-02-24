@@ -148,21 +148,24 @@ namespace UnityEditorExtensions
             Action<Rect, GUIContent> backgroundRenderFunction,
             GUIContent backgroundContent)
         {
-            if (updateContentsFunction != null && Event.current.type == EventType.Repaint)
+            var e = Event.current;
+            if (updateContentsFunction != null && e.type == EventType.Repaint)
             {
                 updateContentsFunction();
             }
 
             // Get default nouse position out of view.
             Vector2 mpos = new Vector2(-99, -99);
-            if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
+            if (e.type == EventType.MouseDown && e.button == 0)
             {
-                mpos = Event.current.mousePosition + scrollPos;
+                mpos = e.mousePosition + scrollPos;
+                
+                bool ctrlPressed = (e.modifiers & EventModifiers.Control) > 0;
+                bool shiftPressed = (e.modifiers & EventModifiers.Shift) > 0;
+                
                 // handle click event
                 for (int i = 0; i < items.Count; i += 1)
                 {
-                    bool ctrlPressed = (Event.current.modifiers & EventModifiers.Control) > 0;
-                    bool shiftPressed = (Event.current.modifiers & EventModifiers.Shift) > 0;
                     // TODO: use shift for bulk select
                     Rect itemBounds = items[i].GetBounds();
                     //Check for selection
