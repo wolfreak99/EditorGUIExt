@@ -42,7 +42,7 @@ namespace UnityEditorExtensions
         {
             Color tmp = GUI.color;
             GUI.color = Color.white;
-            GUI.Box(mItemRect, EditorGUIExt.sEmptyContent);
+            GUI.Box(mItemRect, GUIContent.none);
             DrawItem();
             GUI.color = tmp;
         }
@@ -124,8 +124,7 @@ namespace UnityEditorExtensions
      */
     public class EditorGUIExt
     {
-        public static GUIContent sEmptyContent = new GUIContent();
-
+        
         /** Creates an ItemList with the default settings for background rendering.
          * 
          */
@@ -134,7 +133,7 @@ namespace UnityEditorExtensions
             Action updateContentsFunction,
             ref Vector2 scrollPos)
         {
-            ItemList(items, updateContentsFunction, ref scrollPos, GUI.Box, sEmptyContent);
+            ItemList(items, updateContentsFunction, ref scrollPos, GUI.Box, GUIContent.none);
         }
 
         /** Creates an ItemList.
@@ -165,7 +164,6 @@ namespace UnityEditorExtensions
                 // handle click event
                 for (int i = 0; i < items.Count; i += 1)
                 {
-                    // TODO: use shift for bulk select
                     Rect itemBounds = items[i].GetBounds();
                     //Check for selection
                     if (itemBounds.Contains(mpos))
@@ -211,12 +209,6 @@ namespace UnityEditorExtensions
                 }
             }
             EditorGUILayout.EndScrollView();
-
-            if (Event.current.type == EventType.Repaint)
-            {
-                Rect scrollArea = GUILayoutUtility.GetLastRect();
-                backgroundRenderFunction(scrollArea, backgroundContent);
-            }
         }
 
     }
