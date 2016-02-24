@@ -56,7 +56,7 @@ namespace UnityEditorExtensions
     /** A data structure to organize ListItems within an ItemList
      * 
      */
-    public class ListItemCollection : IEnumerable
+    public class ListItemCollection : IEnumerable<IListItem>, IList<IListItem>
     {
         public ListItemCollection()
         {
@@ -68,7 +68,7 @@ namespace UnityEditorExtensions
         private List<IListItem> mSelected;
         public List<IListItem> Selected { get { return mSelected; } }
 
-        public IEnumerator GetEnumerator()
+        public IEnumerator<IListItem> GetEnumerator()
         {
             foreach (IListItem i in mItems)
             {
@@ -79,9 +79,12 @@ namespace UnityEditorExtensions
                 yield return i;
             }    
         }
+		IEnumerator IEnumerable.GetEnumerator() {
+			return GetEnumerator();
+		}
 
         public void Add(IListItem item) { mItems.Add(item); }
-        public void Remove(IListItem item) { mItems.Remove(item); }
+        public bool Remove(IListItem item) { return mItems.Remove(item); }
         public void Clear() { mItems.Clear(); }
         public int Count { get { return mItems.Count; } }
         public bool ItemSelected(int index) { return mSelected.Contains(mItems[index]); }
@@ -102,6 +105,14 @@ namespace UnityEditorExtensions
         }
 
         public void ClearSelection() { mSelected.Clear(); }
+        public int IndexOf(IListItem item) { return mItems.IndexOf(item); }
+		public void Insert(int index, IListItem item) { mItems.Insert(index, item); }
+		public void RemoveAt(int index) { mItems.RemoveAt(index); }
+		public bool Contains(IListItem item) { return mItems.Contains(item); }
+		public void CopyTo(IListItem[] array, int arrayIndex) { mItems.CopyTo(array, arrayIndex); }
+		public bool IsReadOnly {
+			get { return false; }
+		}
     }
 
     /** Contains all static GUI extention functions.
