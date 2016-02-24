@@ -124,7 +124,6 @@ namespace UnityEditorExtensions
      */
     public class EditorGUIExt
     {
-        private static bool sShiftKeyState = false;
         public static GUIContent sEmptyContent = new GUIContent();
 
         /** Creates an ItemList with the default settings for background rendering.
@@ -171,11 +170,26 @@ namespace UnityEditorExtensions
                     //Check for selection
                     if (itemBounds.Contains(mpos))
                     {
-                        if (!ctrlPressed && !shiftPressed) items.ClearSelection();
-                        if (items.ItemSelected(i) && ctrlPressed)
-                            items.Deselect(i);
-                        else
-                            items.Select(i);
+                        if (shiftPressed && items.Selected.Count >= 1) {
+							int lastIndex = items.IndexOf(items.Selected[items.Selected.Count - 1]);
+							int upper = Mathf.Max(lastIndex, i);
+							int lower = Mathf.Min(lastIndex, i);
+							if (!ctrlPressed) {
+								//Wait until after the last index was cached before clearing
+								items.ClearSelection();
+							}
+							for (int ii = lower; ii <= upper; ii++) {
+								items.Select(ii);
+							}
+						}
+						else {
+							if (!ctrlPressed) 
+								items.ClearSelection();
+							if (items.ItemSelected(i) && ctrlPressed)
+								items.Deselect(i);
+							else
+								items.Select(i);
+						}
                     }
                 }
             }
