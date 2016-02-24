@@ -40,10 +40,10 @@ namespace UnityEditorExtensions
 
         public virtual void DrawSelected()
         {
-            DrawItem();
             Color tmp = GUI.color;
             GUI.color = Color.white;
             GUI.Box(mItemRect, EditorGUIExt.sEmptyContent);
+            DrawItem();
             GUI.color = tmp;
         }
 
