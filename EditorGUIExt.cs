@@ -18,6 +18,7 @@ namespace UnityEditorExtensions
      */
     public class LabelListItem : IListItem
     {
+    	public LabelListItem(string name) { this.name = name; }
         public string name;
         public Func<Texture2D> IconFunction;
         public float height = 16f;
